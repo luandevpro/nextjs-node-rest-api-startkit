@@ -11,7 +11,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const { parse } = require('url');
 const { join } = require('path');
-
+const compression = require('compression');
 const routes = require('./server/routes');
 const sitemapAndRobots = require('./server/utils/sitemapAndRobots');
 
@@ -31,6 +31,7 @@ app
   .prepare()
   .then(() => {
     const server = express();
+    server.use(compression());
     server.use(
       '/_next',
       express.static(path.join(__dirname, '.next'), {

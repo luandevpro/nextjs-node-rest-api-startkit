@@ -9,6 +9,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const routes = require('./routes');
+const sitemapAndRobots = require('./utils/sitemapAndRobots');
 
 dotenv.config();
 
@@ -30,6 +31,8 @@ app
     server.use(passport.initialize());
 
     server.use('/', routes);
+
+    sitemapAndRobots({ server });
 
     server.get('*', (req, res) => handle(req, res));
 

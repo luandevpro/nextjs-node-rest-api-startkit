@@ -1,0 +1,9 @@
+User-agent: *
+
+Allow: /insider
+Allow: /insider/faq
+Disallow: /insider/
+Disallow: /image/
+Disallow: /comics/unlimited/home
+Disallow: /my_account*
+Disallow: */partials/comic* 

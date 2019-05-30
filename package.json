@@ -41,6 +41,7 @@
       "react": "^16.8.6",
       "react-dom": "^16.8.6",
       "react-jss": "^8.6.1",
+      "sitemap": "^2.2.0",
       "styled-components": "^4.2.0"
    },
    "devDependencies": {

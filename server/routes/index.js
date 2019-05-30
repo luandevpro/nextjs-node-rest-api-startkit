@@ -14,6 +14,15 @@ router
     userController.showLoginGoogleCallback,
   );
 
+router.route('/auth/facebook').get(userController.showLoginFacebook);
+
+router
+  .route('/auth/facebook/callback')
+  .get(
+    passportGoogle.authenticate('facebook', { session: false }),
+    userController.showLoginFacebookCallback,
+  );
+
 router.route('/auth/profile').get(isAuthMiddleware.isAuth, userController.showProfile);
 router.route('/logout').get(userController.logout);
 

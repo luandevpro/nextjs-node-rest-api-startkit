@@ -26,9 +26,13 @@ const Index = () => (
     <Grid item xs={3} />
     <Grid item xs={3} style={{ marginTop: '100px' }} />
     <Grid item xs={6}>
-      <Button variant="contained" fullWidth>
-        Signin with Facebook
-      </Button>
+      <Link href="/auth/facebook">
+        <a style={{ textDecoration: 'none' }}>
+          <Button variant="contained" fullWidth>
+            Signin with Facebook
+          </Button>
+        </a>
+      </Link>
     </Grid>
     <Grid item xs={3} />
   </Grid>

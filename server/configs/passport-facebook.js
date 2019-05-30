@@ -1,10 +1,10 @@
-// server/configs/passport-google.js
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 const passportJWT = require('passport-jwt');
 const jwt = require('jsonwebtoken');
 
 const JwtStrategy = passportJWT.Strategy;
 const { ExtractJwt } = passportJWT;
+
 const User = require('../models/User');
 
 const opts = {};
@@ -13,20 +13,21 @@ opts.secretOrKey = 'nextjs-node-rest-api-startkit';
 
 module.exports = (passport) => {
   passport.use(
-    new GoogleStrategy(
+    new FacebookStrategy(
       {
-        clientID: '12174401006-ed9evg3ocj8hq8g3fa63sr5erv9l32id.apps.googleusercontent.com',
-        clientSecret: '5VQH_0aO76kbyv2YhquNMsSU',
-        callbackURL: '/auth/google/callback',
+        clientID: '313766442850367',
+        clientSecret: '5b3d329f666d81c37314adf1d3cc6f1b',
+        callbackURL: '/auth/facebook/callback',
+        profileFields: ['id', 'emails', 'first_name', 'last_name', 'gender' ,'displayName' , 'picture.type(large)'],
         proxy: true,
       },
       (accessToken, refreshToken, profile, done) => {
-        User.findOne({ email: profile.emails[0].value }).then((user) => {
-          if (user) {
-            const payload = {
+          User.findOne({ email: profile.emails[0].value }).then((user) => {
+            if (user) {
+              const payload = {
               id: user._id,
               name: user.name,
-              avatar: user.avatarUrl,
+              avatar: user.avatar,
             };
             jwt.sign(
               payload,
@@ -39,18 +40,17 @@ module.exports = (passport) => {
                 return done(null, { user, token });
               },
             );
-          }else {
-          const newUser = new User();
-          newUser.googleId = profile.id;
-          newUser.name = profile.displayName;
-          newUser.email = profile.emails[0].value;
-          newUser.avatar = profile.photos[0].value.replace('sz=50', 'sz=128');
-
-          newUser.save().then((newuser) => {
+            }else {
+            const newUser = new User();
+            newUser.name = profile.displayName;
+            newUser.email = profile.emails[0].value;
+            newUser.avatar = profile.photos[0].value;
+            
+            newUser.save().then((newuser) => {
             const payload = {
               id: newuser._id,
               name: newUser.name,
-              avatar: newuser.avatarUrl,
+              avatar: newuser.avatar,
             };
             jwt.sign(
               payload,
@@ -64,9 +64,8 @@ module.exports = (passport) => {
               },
             );
           });
-          }
-
-        });
+            }
+          });
       },
     ),
   );

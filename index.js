@@ -1,5 +1,6 @@
 const express = require('express');
 const next = require('next');
+const path = require('path');
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = next({ dev });
@@ -8,8 +9,11 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
-const routes = require('./routes');
-const sitemapAndRobots = require('./utils/sitemapAndRobots');
+const { parse } = require('url');
+const { join } = require('path');
+
+const routes = require('./server/routes');
+const sitemapAndRobots = require('./server/utils/sitemapAndRobots');
 
 dotenv.config();
 
@@ -27,12 +31,34 @@ app
   .prepare()
   .then(() => {
     const server = express();
+    server.use(
+      '/_next',
+      express.static(path.join(__dirname, '.next'), {
+        maxAge: '31536000',
+      }),
+    );
+    server.use(
+      '/static',
+      express.static(path.join(__dirname, '/static'), {
+        maxAge: '31536000',
+      }),
+    );
+    server.get('/service-worker.js', (req, res) => {
+      const parsedUrl = parse(req.url, true);
+      const { pathname } = parsedUrl;
+      if (pathname === '/service-worker.js') {
+        const filePath = join(__dirname, '.next', pathname);
+        app.serveStatic(req, res, filePath);
+      } else {
+        handle(req, res, parsedUrl);
+      }
+    });
     server.use(cookieParser('nextjs-node-rest-api-startkit'));
     server.use(passport.initialize());
 
-    server.use('/', routes);
-
     sitemapAndRobots({ server });
+
+    server.use('/', routes);
 
     server.get('*', (req, res) => handle(req, res));
 

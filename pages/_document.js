@@ -29,8 +29,10 @@ export default class MyDocument extends Document {
           <link rel="mask-icon" href="/static/favicon-mask.svg" color="#49B882" />
           <meta name="theme-color" content="#fff" />
         </NextHead>
-        <Head>{this.props.styleTags}</Head>
-        <Head>{this.props.styleTagsStyled}</Head>
+        <Head>
+          {this.props.styleTags}
+          {this.props.styleTagsStyled}
+        </Head>
         <body>
           <Main />
           <NextScript />
@@ -40,12 +42,12 @@ export default class MyDocument extends Document {
   }
 }
 
-MyDocument.getInitialProps = ({ renderPage }) => {
+MyDocument.getInitialProps = async (ctx) => {
   const pageContext = getContext();
   const sheet = new ServerStyleSheets();
   const sheetStyled = new ServerStyleSheet();
-  const page = renderPage((App) => (props) =>
-    sheet.collect(<App pageContext={pageContext} {...props} />),
+  const page = ctx.renderPage((App) => (props) =>
+    sheet.collect(sheetStyled.collectStyles(<App pageContext={pageContext} {...props} />)),
   );
   const styleTags = sheet.getStyleElement();
   const styleTagsStyled = sheetStyled.getStyleElement();
@@ -58,7 +60,7 @@ MyDocument.getInitialProps = ({ renderPage }) => {
       <style
         id="jss-server-side"
         // eslint-disable-next-line
-        dangerouslySetInnerHTML={{
+         dangerouslySetInnerHTML={{
           __html: pageContext.sheetsRegistry.toString(),
         }}
       />
